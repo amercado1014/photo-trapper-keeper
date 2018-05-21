@@ -23,12 +23,28 @@ app.post('/api/v1/photos', (request, response) => {
   for (let requiredParameter of ['title', 'photo_link']) {
     if (!photo[requiredParameter]) {
       return response
-        .status(422).send({ error: `You're missing a ${requiredParameter} property.`});
+        .status(422)
+        .send({ error: `You're missing a ${requiredParameter} property.`});
     }
   }
 
     database('photos').insert(photo, 'id')
     .then(photo => response.status(201).json({ id: photo[0]}))
+    .catch(error => response.status(500).json({ error }));
+});
+
+app.delete('/api/v1/photos', (request, response) => {
+  const id = request.body.id;
+
+  if (!id) {
+    return response
+      .status(422)
+      .send({ error: `You're missing an id property.` });
+  }
+
+  database('photos').where('id', id).del()
+    .then(() => response.status(200)
+      .json({ message: `Deleted photo with id ${request.body.id}`}))
     .catch(error => response.status(500).json({ error }));
 });
 
