@@ -13,3 +13,8 @@ input,
 button {
   margin-top: 10px;
 }
+
+.delete {
+  width: 30px;
+  height: 30px;
+}

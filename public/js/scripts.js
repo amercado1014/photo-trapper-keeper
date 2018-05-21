@@ -3,6 +3,7 @@ window.onload = () => {
 };
 
 $('.add-button').on('click', displayPhoto);
+$('.album').on('click', '.delete', deletePhoto);
 
 async function displayPhoto(event) {
   event.preventDefault();
@@ -20,6 +21,7 @@ async function displayPhoto(event) {
     <article data-id=${postedPhoto.id} class='photo-container'>
       <img class='photo' src=${photo_link} alt=${title}>
       <h2>${title}</h2>
+      <img class='delete' src='../images/trash.svg' alt='trash can'>
     </article>
   `);
 }
@@ -40,10 +42,11 @@ function prependPhotosFromDb(photos) {
   photos.forEach(photo => {
     const { id, title, photo_link } = photo;
 
-    $('.album').prepend(`
+    $(".album").prepend(`
     <article data-id=${id} class='photo-container'>
       <img class='photo' src=${photo_link} alt=${title}>
       <h2>${title}</h2>
+      <img class='delete' src='../images/trash.svg' alt='trash can'>
     </article>
   `);
   });
@@ -63,6 +66,27 @@ async function postPhoto(photoData) {
     });
     const photoId = await response.json();
     return photoId;
+  } catch (error) {
+    return { error: error.message };
+  }
+}
+
+function deletePhoto(event) {
+  event.target.closest('article').remove();
+  const id = { id: $(this).parent().data('id') };
+  deletePhotoFromDb(id);
+}
+
+async function deletePhotoFromDb(photoId) {
+  const url = '/api/v1/photos';
+
+  try {
+    const response = await fetch(url, {
+      method: 'DELETE',
+      body: JSON.stringify(photoId),
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const status = await response.json();
   } catch (error) {
     return { error: error.message };
   }
