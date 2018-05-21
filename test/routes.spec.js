@@ -57,4 +57,35 @@ describe('API Routes', () => {
         done();
       });
   });
+
+  it('POST photos should create a new photo', done => {
+    chai.request(server)
+      .post('/api/v1/photos')
+      .send({
+        title: 'Snake',
+        photo_link: 'https://i.kinja-img.com/gawker-media/image/upload/c_scale,f_auto,fl_progressive,q_80,w_800/ezkwu6j28tvjpxrs3hxw.jpg',
+      })
+      .end((err, response) => {
+        response.should.have.status(201);
+        response.should.be.json;
+        response.body.should.be.an('object');
+        response.body.should.have.property('id');
+        response.body.id.should.equal(4);
+        done();
+      });
+  });
+
+  it('POST photos should not create a photo with missing data ', done => {
+    chai.request(server)
+      .post('/api/v1/photos')
+      .send({
+        title: 'Snake'
+      })
+      .end((err, response) => {
+        response.should.have.status(422);
+        response.body.should.have.property('error');
+        response.body.error.should.equal(`You're missing a photo_link property.`);
+        done();
+      });
+  });
 });
