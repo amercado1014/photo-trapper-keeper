@@ -1,3 +1,7 @@
+window.onload = () => {
+  getPhotos();
+};
+
 $('.add-button').on('click', displayPhoto);
 
 async function displayPhoto(event) {
@@ -18,6 +22,31 @@ async function displayPhoto(event) {
       <h2>${title}</h2>
     </article>
   `);
+}
+
+async function getPhotos() {
+  const url = '/api/v1/photos';
+
+  try {
+    const response = await fetch(url);
+    const photos = await response.json();
+    prependPhotosFromDb(photos);
+  } catch (error) {
+    return { error: error.message };
+  }
+}
+
+function prependPhotosFromDb(photos) {
+  photos.forEach(photo => {
+    const { id, title, photo_link } = photo;
+
+    $('.album').prepend(`
+    <article data-id=${id} class='photo-container'>
+      <img class='photo' src=${photo_link} alt=${title}>
+      <h2>${title}</h2>
+    </article>
+  `);
+  });
 }
 
 async function postPhoto(photoData) {
