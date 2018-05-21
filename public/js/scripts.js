@@ -17,13 +17,18 @@ async function displayPhoto(event) {
 
   const postedPhoto = await postPhoto(photoData);
 
-  $('.album').prepend(`
+  $(".album").prepend(`
     <article data-id=${postedPhoto.id} class='photo-container'>
       <img class='photo' src=${photo_link} alt=${title}>
-      <h2>${title}</h2>
-      <img class='delete' src='../images/trash.svg' alt='trash can'>
+      <div>
+        <h2>${title}</h2>
+        <img class='delete' src='../images/trash.svg' alt='trash can'>
+      </div>
     </article>
   `);
+
+  $('.title').val('');
+  $('.photo-link').val('');
 }
 
 async function getPhotos() {
@@ -45,8 +50,10 @@ function prependPhotosFromDb(photos) {
     $(".album").prepend(`
     <article data-id=${id} class='photo-container'>
       <img class='photo' src=${photo_link} alt=${title}>
-      <h2>${title}</h2>
-      <img class='delete' src='../images/trash.svg' alt='trash can'>
+      <div>
+        <h2>${title}</h2>
+        <img class='delete' src='../images/trash.svg' alt='trash can'>
+      </div>
     </article>
   `);
   });
@@ -73,7 +80,8 @@ async function postPhoto(photoData) {
 
 function deletePhoto(event) {
   event.target.closest('article').remove();
-  const id = { id: $(this).parent().data('id') };
+  const id = { id: $(this).closest('article').data('id') };
+  console.log(id)
   deletePhotoFromDb(id);
 }
 
