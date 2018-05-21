@@ -1,15 +1,41 @@
 $('.add-button').on('click', displayPhoto);
 
-function displayPhoto(event) {
+async function displayPhoto(event) {
   event.preventDefault();
-  const photoTitle = $('.title').val();
-  const photoLink = $('.photo-link').val();
+  const title = $('.title').val();
+  const photo_link = $('.photo-link').val();
+
+  const photoData = {
+    title,
+    photo_link
+  }
+
+  const postedPhoto = await postPhoto(photoData);
 
   $('.album').prepend(`
-    <article class='photo-container'>
-      <img class='photo' src=${photoLink} alt=${photoTitle}>
-      <h2>${photoTitle}</h2>
+    <article data-id=${postedPhoto.id} class='photo-container'>
+      <img class='photo' src=${photo_link} alt=${title}>
+      <h2>${title}</h2>
     </article>
   `);
+}
+
+async function postPhoto(photoData) {
+  const url = '/api/v1/photos';
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(photoData),
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
+    });
+    const photoId = await response.json();
+    return photoId;
+  } catch (error) {
+    return { error: error.message };
+  }
 }
 
