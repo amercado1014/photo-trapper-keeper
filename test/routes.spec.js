@@ -65,7 +65,7 @@ describe('API Routes', () => {
         title: 'Snake',
         photo_link: 'https://i.kinja-img.com/gawker-media/image/upload/c_scale,f_auto,fl_progressive,q_80,w_800/ezkwu6j28tvjpxrs3hxw.jpg',
       })
-      .end((err, response) => {
+      .end((error, response) => {
         response.should.have.status(201);
         response.should.be.json;
         response.body.should.be.an('object');
@@ -81,10 +81,38 @@ describe('API Routes', () => {
       .send({
         title: 'Snake'
       })
-      .end((err, response) => {
+      .end((error, response) => {
         response.should.have.status(422);
         response.body.should.have.property('error');
         response.body.error.should.equal(`You're missing a photo_link property.`);
+        done();
+      });
+  });
+
+  it('DELETE photos should remove a photo from database', done => {
+    chai.request(server)
+      .delete('/api/v1/photos')
+      .send({
+        id: 1
+      })
+      .end((error, response) => {
+        response.should.have.status(200);
+        response.should.be.json;
+        response.body.should.be.an('object');
+        response.body.should.have.property('message');
+        response.body.message.should.equal('Deleted photo with id 1');
+        done();
+      });
+  });
+
+  it('DELETE photos should not remove a photo with missing id', done => {
+    chai.request(server)
+      .delete('/api/v1/photos')
+      .send({})
+      .end((error, response) => {
+        response.should.have.status(422);
+        response.body.should.have.property('error');
+        response.body.error.should.equal(`You're missing an id property.`);
         done();
       });
   });
