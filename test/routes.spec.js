@@ -28,3 +28,33 @@ describe('Client Routes', () => {
       });
   });
 });
+
+describe('API Routes', () => {
+  beforeEach( done => {
+    database.migrate.rollback().then(() => {
+      database.migrate.latest().then(() => {
+        return database.seed.run().then(() => {
+          done();
+        });
+      });
+    });
+  });
+
+  it('GET photos should return all the photos', done => {
+    chai.request(server)
+      .get('/api/v1/photos')
+      .end((error, response) => {
+        response.should.have.status(200);
+        response.should.be.json;
+        response.body.should.be.an('array');
+        response.body.length.should.equal(3);
+        response.body[0].should.have.property('id');
+        response.body[0].id.should.equal(1);
+        response.body[0].should.have.property('title');
+        response.body[0].title.should.equal('Dog');
+        response.body[0].should.have.property('photo_link');
+        response.body[0].photo_link.should.equal('https://i.imgur.com/MA2D0.jpg');
+        done();
+      });
+  });
+});
