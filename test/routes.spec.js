@@ -91,28 +91,24 @@ describe('API Routes', () => {
 
   it('DELETE photos should remove a photo from database', done => {
     chai.request(server)
-      .delete('/api/v1/photos')
-      .send({
-        id: 1
-      })
+      .delete('/api/v1/photos/1')
       .end((error, response) => {
         response.should.have.status(200);
         response.should.be.json;
         response.body.should.be.an('object');
         response.body.should.have.property('message');
-        response.body.message.should.equal('Deleted photo with id 1');
+        response.body.message.should.equal('Deleted photo with id 1.');
         done();
       });
   });
 
-  it('DELETE photos should not remove a photo with missing id', done => {
+   it('DELETE photos should send message if id does not exist', done => {
     chai.request(server)
-      .delete('/api/v1/photos')
-      .send({})
+      .delete('/api/v1/photos/15')
       .end((error, response) => {
-        response.should.have.status(422);
-        response.body.should.have.property('error');
-        response.body.error.should.equal(`You're missing an id property.`);
+        response.should.have.status(404);
+        response.body.should.have.property('message');
+        response.body.message.should.equal('Id does not exist.');
         done();
       });
   });

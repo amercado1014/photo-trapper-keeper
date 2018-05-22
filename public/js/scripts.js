@@ -81,20 +81,19 @@ async function postPhoto(photoData) {
 function deletePhoto(event) {
   event.target.closest('article').remove();
   const id = { id: $(this).closest('article').data('id') };
-  console.log(id)
   deletePhotoFromDb(id);
 }
 
 async function deletePhotoFromDb(photoId) {
-  const url = '/api/v1/photos';
+  const url = `/api/v1/photos/${photoId}`;
 
   try {
     const response = await fetch(url, {
       method: 'DELETE',
-      body: JSON.stringify(photoId),
       headers: { 'Content-Type': 'application/json' }
     });
     const status = await response.json();
+    return status;
   } catch (error) {
     return { error: error.message };
   }
